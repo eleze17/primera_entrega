@@ -74,8 +74,10 @@ const getProductsFromCart = async (req, res) => { // Esta funcion muestra todos 
 }
 
 const saveProductInCartByID = async (req, res) => { // Esta funcion guarda un producto en un carrito
-    const { id } = req.params                                           // Tomamos el ID
-    const { arrID } = req.body                                          // Tomamos el array de productos a guardar
+    const { id } = req.params 
+    console.log(req.body)        
+    const arrID = []                             // Tomamos el ID
+      arrID.push(req.body.id)                                          // Tomamos el array de productos a guardar
 
     try {
         const dbDataCart = await readAndParseFile(dbCart)
@@ -85,6 +87,8 @@ const saveProductInCartByID = async (req, res) => { // Esta funcion guarda un pr
             const infoProducts = []
             dbDataProducts.forEach(product => {                         // Si los IDs coinciden con los productos los vamos guardando en el array
                 arrID.forEach(id => {
+                    console.log(id)
+                    console.log(product.id)
                     if (product.id == id) infoProducts.push(product)
                 })  
             })

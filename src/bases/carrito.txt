@@ -2,6 +2,37 @@
   {
     "id": "a888640c-a660-469f-b874-c607f2f5e648",
     "timestamp": 1666297540010,
-    "products": []
+    "products": [
+      {
+        "name": "eze",
+        "price": 800,
+        "urlImage": "79imag",
+        "description": "bebida con alcohol",
+        "code": 9999,
+        "stock": 4456,
+        "id": "0d94a2b8-7377-4efd-b96f-899d87ab51b7",
+        "timeStamp": 1666296336144
+      },
+      {
+        "name": "eze",
+        "price": 800,
+        "urlImage": "79imag",
+        "description": "bebida con alcohol",
+        "code": 9999,
+        "stock": 4456,
+        "id": "0d94a2b8-7377-4efd-b96f-899d87ab51b7",
+        "timeStamp": 1666296336144
+      },
+      {
+        "name": "eze",
+        "price": 800,
+        "urlImage": "79imag",
+        "description": "bebida con alcohol",
+        "code": 9999,
+        "stock": 4456,
+        "id": "0d94a2b8-7377-4efd-b96f-899d87ab51b7",
+        "timeStamp": 1666296336144
+      }
+    ]
   }
 ]

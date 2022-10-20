@@ -9,15 +9,14 @@ cartRouter.post('/', ValidarPerfil,(req,res)=>{
 
 cartControllers.saveCart(req,res)})
 
-cartRouter.get('/:id', cartControllers.getProductsFromCart)
+cartRouter.delete('/',ValidarPerfil,(req,res)=>{
 
-
-
-cartRouter.delete('/', cartControllers.deleteCartById)
+cartControllers.deleteCartById(req,res)})
 
 cartRouter.get('/:id/productos', cartControllers.getProductsFromCart)
 
-cartRouter.post('/:id/productos', cartControllers.saveProductInCartByID)
+cartRouter.post('/:id/productos', ValidarPerfil,(req,res)=>{
+cartControllers.saveProductInCartByID(req,res)})
 
 cartRouter.delete('/:id/productos/:id_prod', cartControllers.deleteProductFromCartByID)
 
