@@ -5,8 +5,8 @@ import { fileURLToPath } from 'url'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-const dbCart = path.join(__dirname, '../database/cart.txt')
-const dbProducts = path.join(__dirname, '../database/products.txt')
+const dbCart = path.join(__dirname, '../bases/carrito.txt')
+const dbProducts = path.join(__dirname, '../bases/productos.txt')
 
 const readAndParseFile = async (file) => {  // Esta funcion se utiliza para leer el archivo y parsear a JSON la informacion, para su posterior uso
 
