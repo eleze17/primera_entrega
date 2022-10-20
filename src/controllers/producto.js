@@ -1,39 +1,142 @@
-class producto {
-    constructor(id,nombre,descripcion,codigo,foto,precio,stock){
-     this.id = id,
-     this.timestampProd= Date.now(),
-     this.nombre= nombre,
-     this.descripcion= descripcion,
-     this.codigo= codigo,
-     this.foto= foto,
-     this.precio= precio,
-     this.stock= stock
-     
-    }
-    
+import fs from 'fs'
+import { v4 as prodID } from 'uuid'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
-    quitarProd(id){
-        let indice =this.productos.indexOf(el =>el.id ==id )
-        this.productos.splice(indice,1) 
-    }
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+const dbProducts = path.join(__dirname, '../bases/productos.txt')
+console.log(dbProducts)
 
-    
-    getProdId(id){
-        let indice =this.productos.indexOf(el =>el.id ==id )
-        return this.productos[indice]
-    }
-    
-    getAll(){
-        return this.productos.splice()
-    }
-    
-    /*quitarCarr(id){
-        let indice =carritos.indexOf(el =>el.id ==id )
-        carritos.splice(indice,1) 
-    }*/
+const readAndParseFile = async (file) => {  // Esta funcion se utiliza para leer el archivo y parsear a JSON la informacion, para su posterior uso
 
-
-    
+    try {
+        const data = await fs.promises.readFile(file, 'utf-8', (err, data) => {         // Consultamos por la informacion
+            if(err) throw err
+            return data
+        })
+        return JSON.parse(data)                                                         // Retornamos la informacion parseada
+    } catch (error) {
+        console.error(`El error es: ${error}`)
+    }
 }
 
-module.exports = producto
+const getProductById = async (req, res) => {  // Esta funcion devuelve un producto segun su ID
+    const { id } = req.params
+    try {
+        const dbData = await readAndParseFile(dbProducts)                     // Nos traemos la info parseada a JSON de la db
+        if (!id) {
+            res.status(400).json({ error : 'porfavor ingrese un id' })
+        } else {
+            const info = dbData.find(product => product.id == id)             // Buscamos por ID y lo guardamos en una variable
+            if (info) {                                                       // Comprobamos si existe informacion y retornamos
+                res.send(info)
+            } else { 
+                res.status(400).json({ error : 'producto no encontrado' })
+            }
+        }
+    
+    } catch (error) {
+        console.error(`El error es: ${error}`)
+    }
+}
+
+const saveProduct = async (req, res) => {        // Guarda un prodcuto nuevo
+  
+        const   { name, price, urlImage, description, code, stock } = req.body                              // Tomamos el cuerpo
+        console.log(req.body)
+        if ( !name || !price || !urlImage || !description || !code || !stock ) {                          // Comprobamos que el cuerpo este completo
+            res.status(400).json({ error : 'por favor ingrese todos los datos del producto' })   
+
+        } else {                 
+                                                                            
+            const product = { name, price, urlImage, description, code, stock } //req.body                                                                      // Tomamos el cuerpo 
+           
+            try {
+                let dbData = []
+                 dbData = await readAndParseFile(dbProducts)                                         // Nos traemos la info parseada a JSON del archivo leido
+                 console.log(dbData) 
+                 product.id = prodID()                                                                     // Insertamos el ID en el producto
+                product.timeStamp = Date.now()
+                console.log(product)                                                            // Insertamos el timeStamp
+                dbData.push(product)                                                                      // Pusheamos el producto en el array
+                await fs.promises.writeFile(dbProducts, JSON.stringify(dbData, null, 2), err => {         // Escribimos el archivo
+                    if(err) throw err
+                })
+                res.status(200).json({ messaje: 'producto cargado con exito'})
+            } catch (error) {
+                console.error(`El error es: ${error}`)
+            }
+        }
+    } 
+
+
+const updateProductByID = async (req, res) => {  // Recibe y actualiza un producto según su id.
+   
+        const { id } = req.body                                                                  // Tomamos el ID
+        const { name, price, urlImage, description, code, stock } = req.body                        // Tomamos el cuerpo
+        
+        if ( !name || !price || !urlImage || !description || !code || !stock ) {                    // Comprobamos que el cuerpo este completo
+            res.status(400).json({ error : 'por favor ingrese todos los datos del producto' })                          
+        } else {
+            try {
+                const dbData = await readAndParseFile(dbProducts)
+                let contador = 0
+                for ( let prod = 0; prod < dbData.length; prod++) {                    // Recorremos el array de productos, en caso que coincidan los ID lo actualizamos
+                    if (dbData[prod].id == id) {
+                        dbData[prod].name = name
+                        dbData[prod].price = price
+                        dbData[prod].urlImage = urlImage
+                        dbData[prod].description = description
+                        dbData[prod].code = code
+                        dbData[prod].stock = stock
+                        dbData[prod].timeStamp = Date.now()
+                        contador += 1
+                        break
+                    }
+                }
+                if ( contador != 0 ) {
+                    await fs.promises.writeFile(dbProducts, JSON.stringify(dbData, null, 2), err => {    // En caso de encontrar coincidencias escribimos el archivo
+                        if(err) throw err
+                    })
+                    res.status(200).json({ messaje : 'producto actualizado con exito' })
+                } else {
+                    res.status(400).json({ error : 'producto no encontrado' })                           // En caso que no haya coincidencias retornamos el error
+                }
+            } catch (error) {
+                console.error(`El error es: ${error}`)
+            }
+        }
+  
+}
+
+const deleteProductById = async (req, res) => {   // Esta funcion elimina un producto segun su ID
+        const {id} = req.body.id
+                                                                  // Tomamos el ID
+        try {
+            const dbData = await readAndParseFile(dbProducts)
+
+            const pordIndex = dbData.findIndex(product =>{ 
+                product.id == id})     
+            if ( pordIndex != -1) {                                                                     // Si encuentra 
+                dbData.splice(pordIndex, 1)                                                             // Borra el producto
+                await fs.promises.writeFile(dbProducts, JSON.stringify(dbData, null, 2), err => {       // Escribimos la nueva db
+                    if(err) throw err
+                })
+                res.status(200).json({ messaje : 'producto borrado con exito' })
+            } else {
+                res.status(400).json({ error : 'producto no encontrado' })
+            }
+
+        } catch (error) {
+            console.error(`El error es: ${error}`)
+        }
+   
+}
+
+export const productsController = {
+    getProductById,
+    saveProduct,
+    updateProductByID,
+    deleteProductById
+}

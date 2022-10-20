@@ -1,31 +1,23 @@
-const express = require('express')
-const { Router } = require('express');
-const routCarrito = Router()
-const carrito = require('../controllers/carrito')
+import { Router } from "express"
+import { cartControllers } from "../controllers/carrito.js"
 
+const cartRouter = Router()
 
+//* El router base '/api/carrito' implementará tres rutas disponibles para usuarios y administradores:
 
+//1. POST: '/' - Crea un carrito y devuelve su id.
+cartRouter.post('/', cartControllers.saveCart)
 
-    routCarrito.post('/', (req,res) => {
-        let carriPost = new carrito()
-        res.json(carriPost)
-    })
+//2. DELETE: '/:id' - Vacía un carrito y lo elimina.
+cartRouter.delete('/:id', cartControllers.deleteCartById)
 
-routCarrito.delete('/push', (req,res) => {
-    carrito.push(req.body)
-    res.json(req.body)
-})
+//3. GET: '/:id/productos' - Me permite listar todos los productos guardados en el carrito
+cartRouter.get('/:id/productos', cartControllers.getProductsFromCart)
 
-routCarrito.get('/get', (req,res) => {
-    res.json(carrito)
-})
+//4. POST: '/:id/productos' - Para incorporar productos al carrito por su id de producto
+cartRouter.post('/:id/productos', cartControllers.saveProductInCartByID)
 
-routCarrito.post('/get', (req,res) => {
-    res.json(carrito)
-})
+//5. DELETE: '/:id/productos/:id_prod' - Eliminar un producto del carrito por su id de carrito y de producto
+cartRouter.delete('/:id/productos/:id_prod', cartControllers.deleteProductFromCartByID)
 
-routCarrito.delete('/get', (req,res) => {
-    res.json(carrito)
-})
-
-Module.export = routCarrito.js
+export default cartRouter
