@@ -9,7 +9,7 @@ cartRouter.post('/', ValidarPerfil,(req,res)=>{
 
 cartControllers.saveCart(req,res)})
 
-cartRouter.delete('/',ValidarPerfil,(req,res)=>{
+cartRouter.delete('/:id',ValidarPerfil,(req,res)=>{
 
 cartControllers.deleteCartById(req,res)})
 
@@ -18,6 +18,9 @@ cartRouter.get('/:id/productos', cartControllers.getProductsFromCart)
 cartRouter.post('/:id/productos', ValidarPerfil,(req,res)=>{
 cartControllers.saveProductInCartByID(req,res)})
 
-cartRouter.delete('/:id/productos/:id_prod', cartControllers.deleteProductFromCartByID)
+cartRouter.delete('/:id/productos/:id_prod', ValidarPerfil,(req,res)=>{
+
+
+cartControllers.deleteProductFromCartByID(req,res)})
 
 export default cartRouter

@@ -63,6 +63,7 @@ const getProductsFromCart = async (req, res) => { // Esta funcion muestra todos 
     const { id } = req.params                                // Tomamos el ID
      try {
         const dbData = await readAndParseFile(dbCart)
+        console.log(dbData)
         dbData.forEach(cart => {
             if (cart.id == id) {                             // Si el id del carrito coincide con el enviado  
                 res.send(cart.products)                      // Enviamos la informacion
